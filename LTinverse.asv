@@ -1,0 +1,29 @@
+function X= LTinverse (A)
+[n,n]= size (A ); X= zeros (n,n);
+    if dividable (A )==1
+        [B ,C]= divide (A );
+        T=LTinverse (B)
+         
+        X (1: n /2 ,1: n /2)= T;
+        X (1: n/2 ,n /2+1: n )= 0;
+        temp=-1* T* (C* (T*eye(length(T),1)));
+        X(n /2+1: n ,1: n /2)= -1* T* C* T;
+        X(n /2+1: n ,1: n /2)= -1* T* C* T;
+        X(n /2+1: n ,n /2+1: n )= T;
+        
+    else X= inv (A );
+    end
+end
+function X= dividable (A)
+[n,n ]= size (A);
+X =((n >=2)&&( mod (n ,2)==0));
+end
+function [B ,C] = divide (A)
+[n ,n ]= size (A );
+B= zeros (n/2 ,n /2);
+C=B;
+
+B=A (1:n /2 ,1: n /2);
+C=A(n /2+1: n ,1: n /2 );
+
+end

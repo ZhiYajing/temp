@@ -1,10 +1,10 @@
-function X= LowToeplitzInv (A)
+function X= LowToeplitzInv(A)
 % a=10*(rand(8,1));A=toeplitz(a);A=tril(A);
 
 [n,n]= size (A ); X= zeros (n,n);
-    if dividable (A )==1
+    if dividable (A)==1
         [B ,C]= divide (A );
-        T=LowToeplitzInv (B)
+        T=LowToeplitzInv (B);
          
 %         X (1: n /2 ,1: n /2)= T;
 %         X (1: n/2 ,n /2+1: n )= 0;
