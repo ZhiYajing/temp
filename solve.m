@@ -1,5 +1,5 @@
 function x=solve(L,S,b)
-[n,n]=size(L);[m,m]=size(S)
+[n,n]=size(L);[m,m]=size(S);
 % n=32;m=8;
 % a=10*(rand(n,1));L=tril(toeplitz(a));
 % S=toeplitz([2 -1 zeros(1, m-2)]);
@@ -8,23 +8,26 @@ function x=solve(L,S,b)
 
 % S= Q'AQ, A=diag(eig(S));
 a=eig(S);
-A=diag(a);
+%A=diag(a);
 
 % f=P'c;c=b_tilde;c=kron(eye(n),Q)b;f=P'kron(eye(n),Q)b;
 % c=kron(eye(n),Q)b=vec(QBI)=vec(QB);
-for i=1:n
-   B(:,i)=b((i-1)*m+1 : i*m);
-   B(:,i)=dst(B(:,i))*sqrt(2/(m+1));
-end
+B=reshape(b,[m,n]);
+B=dst(B)*sqrt(2/(m+1));
+% for i=1:n
+%    B(:,i)=b((i-1)*m+1 : i*m);
+%    B(:,i)=dst(B(:,i))*sqrt(2/(m+1));
+% end
 c=B(:);
 %QB=[Qb1 Qb2 ... Qbn];
 %Qb(i)=fst(b(i));
 %c=QB(:);
 
 %f=P'c=vec(C');
-for i=1:n
-    C(:,i)=c((i-1)*m+1 : i*m);
-end
+C=reshape(c,[m,n]);
+% for i=1:n
+%     C(:,i)=c((i-1)*m+1 : i*m);
+% end
 C=C';
 f=C(:);
 
@@ -33,7 +36,10 @@ f=C(:);
 % solve (L+ lamda*I)x'=b'; length(a)=m;
 for i=1:m
     lamda=a(i);
-    Z(:,i)=LowToeplitzInv(L+ lamda*eye(n)) * f((i-1)*n+1 : i*n);
+    T=LowToeplitzInv(L+ lamda*eye(n));
+    y=f((i-1)*n+1 : i*n);
+    Z(:,i)= ToeplitzMatVec(T,y);
+    %Z(:,i)=LowToeplitzInv(L+ lamda*eye(n)) * f((i-1)*n+1 : i*n);
 end 
 z=Z(:);
 
@@ -44,10 +50,13 @@ Z=Z';
 y=Z(:);
 
 %x=kron(eye(n),Q')y=vec(Q'YI)=vec(Q'Y);
-for i=1:n
-   Y(:,i)=y((i-1)*m+1 : i*m); 
-   Y(:,i)=dst(Y(:,i))*sqrt(2/(m+1));
-end
+
+Y=reshape(y,[m,n]);
+Y=dst(Y)*sqrt(2/(m+1));
+% for i=1:n
+%    Y(:,i)=y((i-1)*m+1 : i*m); 
+%    Y(:,i)=dst(Y(:,i))*sqrt(2/(m+1));
+% end
 x=Y(:);
 %Q'Y=[Q'y1 Q'y2 ... Q'yn];
 %Q'y(i)=fst(y(i));
@@ -55,7 +64,7 @@ x=Y(:);
 end
 
 function X= LowToeplitzInv(A)
-% a=10*(rand(8,1));A=toeplitz(a);A=tril(A);
+% a=10*(rand(n,1));A=toeplitz(a);A=tril(A);
 
 [n,n]= size (A ); X= zeros (n,n);
     if dividable (A)==1
