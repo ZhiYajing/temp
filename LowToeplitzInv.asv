@@ -12,10 +12,7 @@ function X= LowToeplitzInv(A)
 %         X(n /2+1: n ,n /2+1: n )= T;
         
         x(1: n /2)=T*eye(length(T),1);
-%         x(n /2+1: n)= -T* (C* (T*eye(length(T),1)));
-        w=ToelitzMatVec(C,T(:,1));
-        w=ToelitzMatVec(-T,w);
-        x(n /2+1: n)=w;
+        %x(n /2+1: n)= -T* (C* (T*eye(length(T),1)));
         
         X (1: n /2 ,1: n /2)= T;
         X (1: n/2 ,n /2+1: n )= 0;

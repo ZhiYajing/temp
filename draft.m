@@ -13,7 +13,8 @@ A=diag(a);
 %c=kron(eye(n),Q)b=vec(QBI)=vec(QB);
 for k=1:n
    B(:,k)=b((k-1)*m+1 : k*m);
-   BB(:,k)=sine_transform_data(B(:,k));
+   %BB(:,k)=sine_transform_data(B(:,k));
+   BB(:,k)=dst(B(:,k))*sqrt(2/(m+1));
 end
 c=BB(:);
 %QB=[Qb1 Qb2 ... Qbn];
@@ -28,7 +29,6 @@ D=C';
 f=D(:);
 
 % ( kron(eye(m),L)+ kron(A, eye(n)) ) z = f
-% what is f ?????
 % x_hat=z; b_hat=f;
 % solve (L+ lamda*I)x'=b'; length(a)=m;
 for i=1:m
@@ -46,7 +46,8 @@ y=W(:);
 %x=kron(eye(n),Q')y=vec(Q'YI)=vec(Q'Y);
 for j=1:n
    Y(:,j)=y((j-1)*m+1 : j*m); 
-   YY(:,j)=sine_transform_data(Y(:,j));
+   %YY(:,j)=sine_transform_data(Y(:,j));
+   YY(:,j)=dst(Y(:,j))*sqrt(2/(m+1));
 end
 x=YY(:);
 %Q'Y=[Q'y1 Q'y2 ... Q'yn];
