@@ -8,23 +8,26 @@ function x=draft(L,S,b)
 
 % S= Q'AQ, A=diag(eig(S));
 a=eig(S);
-A=diag(a);
+%A=diag(a);
 
 % f=P'c;c=b_tilde;c=kron(eye(n),Q)b;f=P'kron(eye(n),Q)b;
 % c=kron(eye(n),Q)b=vec(QBI)=vec(QB);
+B=reshape(b,[m,n]);
 for i=1:n
-   B(:,i)=b((i-1)*m+1 : i*m);
+   %B(:,i)=b((i-1)*m+1 : i*m);
    B(:,i)=sine_transform_data(B(:,i));
 end
+
 c=B(:);
 %QB=[Qb1 Qb2 ... Qbn];
 %Qb(i)=fst(b(i));
 %c=QB(:);
 
 %f=P'c=vec(C');
-for i=1:n
-    C(:,i)=c((i-1)*m+1 : i*m);
-end
+C=reshape(c,[m,n]);
+% for i=1:n
+%     C(:,i)=c((i-1)*m+1 : i*m);
+% end
 C=C';
 f=C(:);
 
@@ -33,7 +36,10 @@ f=C(:);
 % solve (L+ lamda*I)x'=b'; length(a)=m;
 for i=1:m
     lamda=a(i);
-    Z(:,i)=LowToeplitzInv(L+ lamda*eye(n)) * f((i-1)*n+1 : i*n);
+    T=LowToeplitzInv(L+ lamda*eye(n));
+    y=f((i-1)*n+1 : i*n);
+    Z(:,i)= ToeplitzMatVec(T,y);
+    %Z(:,i)=LowToeplitzInv(L+ lamda*eye(n)) * f((i-1)*n+1 : i*n);
 end 
 z=Z(:);
 
@@ -44,8 +50,9 @@ Z=Z';
 y=Z(:);
 
 %x=kron(eye(n),Q')y=vec(Q'YI)=vec(Q'Y);
+Y=reshape(y,[m,n]);
 for i=1:n
-   Y(:,i)=y((i-1)*m+1 : i*m); 
+   %Y(:,i)=y((i-1)*m+1 : i*m); 
    Y(:,i)=sine_transform_data(Y(:,i));
 end
 x=Y(:);
@@ -87,7 +94,7 @@ end
 function [B ,C] = divide (A)
 [n ,n ]= size (A );
 
-B=A (1:n /2 ,1: n /2);
+B=A(1:n /2 ,1: n /2);
 C=A(n /2+1: n ,1: n /2 );
 
 end
