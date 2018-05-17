@@ -69,8 +69,8 @@ function X= LowToeplitzInv(A)
         
         x(1: n /2)=T*eye(length(T),1);
 %         x(n /2+1: n)= -T* (C* (T*eye(length(T),1)));
-        w=ToelitzMatVec(C,T(:,1));
-        w=ToelitzMatVec(-T,w);
+        w=ToeplitzMatVec(C,T(:,1));
+        w=ToeplitzMatVec(-T,w);
         x(n /2+1: n)=w;
         
         X (1: n /2 ,1: n /2)= T;
@@ -92,7 +92,7 @@ C=A(n /2+1: n ,1: n /2 );
 
 end
 
-function x=ToelitzMatVec(T,y)
+function x=ToeplitzMatVec(T,y)
 %n=8
 %a=10*(rand(n,1));b=[a(1);10*(rand((n-1),1))];T=toeplitz(a,b);
 %y=10*(rand(n,1));
