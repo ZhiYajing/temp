@@ -12,21 +12,21 @@ A=diag(a);
 
 % f=P'c;c=b_tilde;c=kron(eye(n),Q)b;f=P'kron(eye(n),Q)b;
 % c=kron(eye(n),Q)b=vec(QBI)=vec(QB);
-for k=1:n
-   B(:,k)=b((k-1)*m+1 : k*m);
-   BB(:,k)=dst(B(:,k))*sqrt(2/(m+1));
+for i=1:n
+   B(:,i)=b((i-1)*m+1 : i*m);
+   B(:,i)=dst(B(:,i))*sqrt(2/(m+1));
 end
-c=BB(:);
+c=B(:);
 %QB=[Qb1 Qb2 ... Qbn];
 %Qb(i)=fst(b(i));
 %c=QB(:);
 
 %f=P'c=vec(C');
-for h=1:n
-    C(:,h)=c((h-1)*m+1 : h*m);
+for i=1:n
+    C(:,i)=c((i-1)*m+1 : i*m);
 end
-D=C';
-f=D(:);
+C=C';
+f=C(:);
 
 % ( kron(eye(m),L)+ kron(A, eye(n)) ) z = f
 % x_hat=z; b_hat=f;
@@ -40,15 +40,15 @@ z=Z(:);
 %z=P'y; y=x_tilde;y=kron(eye(n),Q)x; 
 %x=kron(eye(n),Q')Pz;
 %y=Pz=vec(Z');
-W=Z';
-y=W(:);
+Z=Z';
+y=Z(:);
 
 %x=kron(eye(n),Q')y=vec(Q'YI)=vec(Q'Y);
-for j=1:n
-   Y(:,j)=y((j-1)*m+1 : j*m); 
-   YY(:,j)=dst(Y(:,j))*sqrt(2/(m+1));
+for i=1:n
+   Y(:,i)=y((i-1)*m+1 : i*m); 
+   Y(:,i)=dst(Y(:,i))*sqrt(2/(m+1));
 end
-x=YY(:);
+x=Y(:);
 %Q'Y=[Q'y1 Q'y2 ... Q'yn];
 %Q'y(i)=fst(y(i));
 %x=Q'Y(:);
@@ -108,12 +108,11 @@ z=[y;zeros(n,1)];
 %Cz=F*AFz
 lamda=fft(C(:,1));
 %A=diag(lamda);
-x1=fft(z);
-x2=lamda.*x1;
-x3=ifft(x2);
-x=x3(1:n);
+x=fft(z);
+x=lamda.*x;
+x=ifft(x);
+x=x(1:n);
 end
-
 
 
 
