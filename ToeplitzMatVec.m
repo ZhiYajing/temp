@@ -1,4 +1,4 @@
-function x=ToelitzMatVec(T,y)
+function x=ToeplitzMatVec(T,y)
 %n=8
 %a=10*(rand(n,1));b=[a(1);10*(rand((n-1),1))];T=toeplitz(a,b);
 %y=10*(rand(n,1));
