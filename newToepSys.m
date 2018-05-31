@@ -1,11 +1,12 @@
 function x=newToepSys(L,S1,S2,b)
 [n,n]=size(L);[m1,m1]=size(S1);[m2,m2]=size(S2);m=m1*m2;
-% n=4;m1=2;m2=4;m=m1*m2;
+% INPUTE:
+% n=9;m1=11;m2=4;m=m1*m2;
 % a=10*(rand(n,1));L=tril(toeplitz(a));
 % S1=toeplitz([2 -1 zeros(1, m1-2)]);
 % S2=toeplitz([2 -1 zeros(1, m2-2)]);
 % b=10*(rand(n*m,1));
-% solve: S=(kron(eye(m1),S2) + kron(S1,eye(m2)));
+% solve:
 % (kron(L,eye(m)) + kron(eye(n),(kron(eye(m1),S2) + kron(S1,eye(m2))))) x = b
 % xx=inv(kron(L,eye(m)) + kron(eye(n),(kron(eye(m1),S2) + kron(S1,eye(m2)))))*b
 
@@ -14,14 +15,14 @@ function x=newToepSys(L,S1,S2,b)
 % S_hat=(kron(Q1',Q2'))*(kron(eye(m1),A2)+kron(A1,eye(m2)))*(kron(Q1,Q2))
 %      = Q_hat'*A_hat*Q_hat;
 
-%a1=eig(S1);a2=eig(S2);
+% a1=eig(S1);a2=eig(S2);
 for i=1:m1
     a1(m1-i+1)=2+2*cos(i*pi/(m1+1));
 end
 for i=1:m2
     a2(m2-i+1)=2+2*cos(i*pi/(m2+1));
 end
-for i = 1:m1
+for i=1:m1
    A(:,i)= a2+a1(i);
 end
 a=A(:);
@@ -40,21 +41,15 @@ for i=1:n
    %B(:,i)=b((i-1)*m+1 : i*m);
    B1= reshape(B(:,i),[m2,m1]); % B1= reshape(bi,[m2,m1]);
    %E=Q2*B1
-% %    for j=1:m1
-% %       E(:,j)= sine_transform_data(B1(:,j));
-% %    end
    E=dst(B1)*sqrt(2/(m2+1));
    %H=E*Q1'=(Q1*E')'
-   F=E';
-% %    for k=1:m2
-% %       G(:,k)= sine_transform_data(F(:,k));
-% %    end
-   G=dst(F)*sqrt(2/(m1+1));
-   H=G';
-   BB(:,i)=H(:);
+   E=E';
+   G=dst(E)*sqrt(2/(m1+1));
+   G=G';
+   B(:,i)=G(:);
 end
 
-c=BB(:); %c=b_tilde;
+c=B(:); %c=b_tilde;
 %QB=[Qb1 Qb2 ... Qbn];
 %Qb(i)=fst(b(i));
 %c=QB(:);
@@ -96,29 +91,23 @@ Y=reshape(y,[m,n]);
 for i=1:n
   Y1=reshape(Y(:,i),[m2,m1]); %Y1=reshape(yi,[m2,m1]);
   %E=Q2'*Y1
-% %   for j=1:m1
-% %      E(:,j)= sine_transform_data(Y1(:,j));
-% %   end
   E=dst(Y1)*sqrt(2/(m2+1));
   %H=E*Q1=(Q1'*E')'
-  F=E';
-% %   for k=1:m2
-% %      G(:,k)= sine_transform_data(F(:,k));
-% %   end
-  G=dst(F)*sqrt(2/(m1+1));
-  H=G';
-  YY(:,i)=H(:);
+  E=E';
+  G=dst(E)*sqrt(2/(m1+1));
+  G=G';
+  Y(:,i)=G(:);
 end
-x=YY(:);
+x=Y(:);
 %Q'Y=[Q'y1 Q'y2 ... Q'yn];
 %Q'y(i)=fst(y(i));
 %x=Q'Y(:);
 end
 
-function X= LowToeplitzInv(A)
+function X=LowToeplitzInv(A)
 % a=10*(rand(9,1));A=toeplitz(a);A=tril(A);
 
-[n,n]= size (A ); X= zeros (n,n);
+[n,n]=size(A); X=zeros(n,n);
      %if dividable (A)==1
       
      if n>=2
@@ -128,36 +117,35 @@ function X= LowToeplitzInv(A)
             A=toeplitz(a);A=tril(A);
             n=m;
         end
-        [B ,C]= divide (A);
+        [B,C]= divide (A);
         T=LowToeplitzInv (B);
-%         X (1: n /2 ,1: n /2)= T;
-%         X (1: n/2 ,n /2+1: n )= 0;
-%         X(n /2+1: n ,1: n /2)= -1* T* C* T;
-%         X(n /2+1: n ,n /2+1: n )= T;
+%         X(1:n/2,1:n/2)= T;
+%         X(1:n/2,n/2+1:n)= 0;
+%         X(n/2+1:n,1:n/2)= -T*C*T;
+%         X(n/2+1:n,n/2+1:n)= T;
         
-        x(1: n /2)=T*eye(length(T),1);
-        %x(1: n /2)=T(:,1);
-%         x(n /2+1: n)= -T* (C* (T*eye(length(T),1)));
+        x(1:n/2)=T(:,1);
+%         x(n/2+1: n)= -T*(C*(T*eye(length(T),1)));
         w=ToeplitzMatVec(C,T(:,1));
         w=ToeplitzMatVec(-T,w);
-        x(n /2+1: n)=w;
+        x(n/2+1: n)=w;
         
-        X (1: n /2 ,1: n /2)= T;
-        X (1: n/2 ,n /2+1: p )= 0;
-        %X(n /2+1: n ,1: n /2)= toeplitz(x(n/2+1 : n),x(n/2+1:-1:2));
-        Y=toeplitz(x(n/2+1 : n),x(n/2+1:-1:2));
-        X(n /2+1: p ,1: n /2)= Y(1:(p-n/2),:);
-        %X(n /2+1: n ,n /2+1: n )= T;
-        X(n /2+1: p ,n /2+1: p )= T(1:(p-n/2),1:(p-n/2));
+        X(1:n/2,1:n/2)= T;
+        X(1:n/2,n/2+1:p)= 0;
+        %X(n/2+1:n,1:n/2)= toeplitz(x(n/2+1:n),x(n/2+1:-1:2));
+        Y=toeplitz(x(n/2+1:n),x(n/2+1:-1:2));
+        X(n/2+1:p,1:n/2)= Y(1:(p-n/2),:);
+        %X(n/2+1:n,n/2+1:n)= T;
+        X(n/2+1:p,n/2+1:p)= T(1:(p-n/2),1:(p-n/2));
     else X=1/A;
     end
 end
 
-function [B ,C] = divide (A)
-[n ,n ]= size (A );
+function [B,C]=divide(A)
+[n,n]= size(A);
 
-B=A(1:n /2 ,1: n /2);
-C=A(n /2+1: n ,1: n /2 );
+B=A(1:n/2,1:n/2);
+C=A(n/2+1:n,1:n/2);
 end
 
 function x=ToeplitzMatVec(T,y)
@@ -181,9 +169,3 @@ x=lamda.*x;
 x=ifft(x);
 x=x(1:n);
 end
-
-
-
-
-
-
