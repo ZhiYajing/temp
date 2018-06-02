@@ -1,37 +1,27 @@
-function X= LowToeplitzInv(A)
-% a=10*(rand(8,1));A=toeplitz(a);A=tril(A);
+function x= LowToeplitzInv(t)
+% t=10*(rand(9,1));A=toeplitz(t);A=tril(A);
+n=length(t);x=zeros(n,1);
 
-[n,n]= size (A ); X= zeros (n,n);
-    if dividable (A)==1
-        [B ,C]= divide (A );
-        T=LowToeplitzInv (B);
-         
+      
+     if n>=2
+         m=pow2(ceil(log2(n)));p=n;
+        if m~= n
+            t=[t;zeros(m-n,1)];
+            n=m;
+        end
+        tt=LowToeplitzInv(t(1:n /2));
 %         X (1: n /2 ,1: n /2)= T;
 %         X (1: n/2 ,n /2+1: n )= 0;
 %         X(n /2+1: n ,1: n /2)= -1* T* C* T;
 %         X(n /2+1: n ,n /2+1: n )= T;
         
-        x(1: n /2)=T*eye(length(T),1);
+        x(1: n /2)=tt;
 %         x(n /2+1: n)= -T* (C* (T*eye(length(T),1)));
-        w=ToelitzMatVec(C,T(:,1));
-        w=ToelitzMatVec(-T,w);
+
+        w=ToeplitzMatVec(t(n/2+1:n),t(1:n /2),tt);
+        w=ToeplitzMatVec(-tt,[],w);
         x(n /2+1: n)=w;
-        
-        X (1: n /2 ,1: n /2)= T;
-        X (1: n/2 ,n /2+1: n )= 0;
-        X(n /2+1: n ,1: n /2)= toeplitz(x(n/2+1 : n),x(n/2+1:-1:2));
-        X(n /2+1: n ,n /2+1: n )= T;
-    else X=1/A;
+        x=x(1:p);
+    else x=1/t;
     end
-end
-function X= dividable (A)
-[n,n ]= size (A);
-X =((n >=2)&&( mod (n ,2)==0));
-end
-function [B ,C] = divide (A)
-[n ,n ]= size (A );
-
-B=A (1:n /2 ,1: n /2);
-C=A(n /2+1: n ,1: n /2 );
-
 end

@@ -1,6 +1,7 @@
 function x=newdraft(L,S1,S2,b)
-[n,n]=size(L);[m1,m1]=size(S1);[m2,m2]=size(S2);m=m1*m2;
-% n=4;m1=2;m2=4;m=m1*m2;
+n=size(L,1);m1=size(S1,1);m2=size(S2,1);m=m1*m2;
+% n=4;m1=4;m2=4;m=m1*m2;
+%gmres
 % a=10*(rand(n,1));L=tril(toeplitz(a));
 % S1=toeplitz([2 -1 zeros(1, m1-2)]);
 % S2=toeplitz([2 -1 zeros(1, m2-2)]);
@@ -14,19 +15,33 @@ function x=newdraft(L,S1,S2,b)
 % S_hat=(kron(Q1',Q2'))*(kron(eye(m1),A2)+kron(A1,eye(m2)))*(kron(Q1,Q2))
 %      = Q_hat'*A_hat*Q_hat;
 
-%a1=eig(S1);a2=eig(S2);
+% a1=eig(S1);a2=eig(S2);
+% m=6;Q=zeros(m);
+% for i=1:m
+%    for j=1:m
+%       Q(i,j)=sqrt(2/(m+1))*sin(pi*i*j/(m+1)); 
+%    end
+% end
+% for i=1:m 
+%     a1(i)=2+2*cos(i*pi/(m+1));
+% end
+% A1=diag(a1);
+% for i=1:m
+%     a2(m-i+1)=2+2*cos(i*pi/(m+1));
+% end
+% A2=diag(a2);
+% Q'*A1*Q;Q'*A2*Q;
 for i=1:m1
     a1(m1-i+1)=2+2*cos(i*pi/(m1+1));
 end
 for i=1:m2
     a2(m2-i+1)=2+2*cos(i*pi/(m2+1));
 end
+
 for i = 1:m1
    A(:,i)= a2+a1(i);
 end
 a=A(:);
-% A1=diag(a1); A2=diag(a2);
-
 
 % f=P'c;c=b_tilde;c=kron(eye(n),Q_hat)b;Q_hat=kron(Q1,Q2);f=P'kron(eye(n),Q_hat)b;
 % c=kron(eye(n),Q_hat)b=vec(Q_hat*BI)=vec(Q_hat*B); B is m*n;
@@ -73,7 +88,8 @@ for i=1:m
     lamda=a(i);
     T=LowToeplitzInv(L+ lamda*eye(n));
     y=f((i-1)*n+1 : i*n);
-    Z(:,i)= ToeplitzMatVec(T,y);
+    %Z(:,i)= ToeplitzMatVec(T,y);
+    Z(:,i)= ToeplitzMatVec(T(:,1),[],y);
     %Z(:,i)=LowToeplitzInv(L+ lamda*eye(n)) * f((i-1)*n+1 : i*n);
 end 
 z=Z(:);%z=x_hat
@@ -114,7 +130,7 @@ end
 function X= LowToeplitzInv(A)
 % a=10*(rand(9,1));A=toeplitz(a);A=tril(A);
 
-[n,n]= size (A ); X= zeros (n,n);
+n= size (A,1); X= zeros (n,n);
      %if dividable (A)==1
       
      if n>=2
@@ -134,8 +150,8 @@ function X= LowToeplitzInv(A)
         x(1: n /2)=T*eye(length(T),1);
         %x(1: n /2)=T(:,1);
 %         x(n /2+1: n)= -T* (C* (T*eye(length(T),1)));
-        w=ToeplitzMatVec(C,T(:,1));
-        w=ToeplitzMatVec(-T,w);
+        w=ToeplitzMatVec(C(:,1),C(1,:),T(:,1));
+        w=ToeplitzMatVec(-T(:,1),[],w);
         x(n /2+1: n)=w;
         
         X (1: n /2 ,1: n /2)= T;
@@ -156,22 +172,23 @@ B=A(1:n /2 ,1: n /2);
 C=A(n /2+1: n ,1: n /2 );
 end
 
-function x=ToeplitzMatVec(T,y)
+function x=ToeplitzMatVec(t1,t2,y)
 %n=8
-%a=10*(rand(n,1));b=[a(1);10*(rand((n-1),1))];T=toeplitz(a,b);
-%y=10*(rand(n,1));
-[n,n]=size(T);
-c=T(1,:); %1st row
-r=T(:,1); %1st column
-c=[0 c(n:-1:2)];
-r=[0;r(n:-1:2)];
-B=toeplitz(c,r);
-C=[T B;B T]; % circulant matrices
+%t1=10*(rand(n,1));t2=[t1(1);10*(rand((n-1),1))];y=10*(rand(n,1));
+%T=toeplitz(t1,t2); x=T*y;
+
+n=length(t1);
+m=length(t2);
+%c=T(1,:); %1st row
+if m==0
+    t2=[t1(1);zeros((n-1),1)];
+end
+%r=t1 1st column
+
 z=[y;zeros(n,1)];
 
-%Cz=F*AFz
-lamda=fft(C(:,1));
-%A=diag(lamda);
+%Cz=F*AFz;lamda=fft(C(:,1));A=diag(lamda);
+lamda=fft([t1;0;t2(n:-1:2)]);
 x=fft(z);
 x=lamda.*x;
 x=ifft(x);
