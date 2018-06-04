@@ -1,8 +1,9 @@
 function x=testToepSys(l,s1,s2,b)
 n=length(l);m1=s1(4);m2=s2(4);m=m1*m2;
-% INPUTE:
-% n=9;m1=11;m2=4;m=m1*m2;
-% a=10*(rand(n,1));L=tril(toeplitz(a));
+% INPUT:
+% n=9;m1=5;m2=4;m=m1*m2;
+% l=10*(rand(n,1));L=tril(toeplitz(l));
+% s1=[-1;2;-1;m1];s2=[-1;2;-1;m2];
 % S1=toeplitz([2 -1 zeros(1, m1-2)]);
 % S2=toeplitz([2 -1 zeros(1, m2-2)]);
 % b=10*(rand(n*m,1));
@@ -39,8 +40,8 @@ for i=1:n
    %G=E*Q1'=(Q1*E')'
    %*************
    for j=1:m1
-       bb((j-1)*m2+1:j*m2)=sine_transform_data(b(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2));
-       %bb((j-1)*m2+1:j*m2)=sqrt(2/(m2+1))*dst(b(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2));
+       %bb((j-1)*m2+1:j*m2)=sine_transform_data(b(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2));
+       bb((j-1)*m2+1:j*m2)=sqrt(2/(m2+1))*dst(b(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2));
    end
    for k=1:m
        if  rem(k,m1)==0
@@ -51,8 +52,8 @@ for i=1:n
    %*********
    %**********
    for j=1:m2
-       bb((j-1)*m1+1:j*m1)=sine_transform_data(cc(((j-1)*m1+1):+j*m1)); 
-       %bb((j-1)*m1+1:j*m1)=sqrt(2/(m1+1))*dst(cc(((j-1)*m1+1):+j*m1)); 
+       %bb((j-1)*m1+1:j*m1)=sine_transform_data(cc(((j-1)*m1+1):+j*m1)); 
+       bb((j-1)*m1+1:j*m1)=sqrt(2/(m1+1))*dst(cc(((j-1)*m1+1):+j*m1)); 
    end
   
    for k=1:m
@@ -124,8 +125,8 @@ for i=1:n
   %G=E*Q1=(Q1'*E')';
   %*************
    for j=1:m1
-       %bb((j-1)*m2+1:j*m2)=sqrt(2/(m2+1))*dst(y(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2)); 
-       bb((j-1)*m2+1:j*m2)=sine_transform_data(y(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2)); 
+       bb((j-1)*m2+1:j*m2)=sqrt(2/(m2+1))*dst(y(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2)); 
+       %bb((j-1)*m2+1:j*m2)=sine_transform_data(y(((i-1)*m+(j-1)*m2+1):(i-1)*m+j*m2)); 
    end
   for k=1:m
        if  rem(k,m1)==0
@@ -136,8 +137,8 @@ for i=1:n
    %*********
   %**********
    for j=1:m2
-       %bb((j-1)*m1+1:j*m1)=sqrt(2/(m1+1))*dst(cc(((j-1)*m1+1):+j*m1));
-       bb((j-1)*m1+1:j*m1)=sine_transform_data(cc(((j-1)*m1+1):+j*m1)); 
+       bb((j-1)*m1+1:j*m1)=sqrt(2/(m1+1))*dst(cc(((j-1)*m1+1):+j*m1));
+       %bb((j-1)*m1+1:j*m1)=sine_transform_data(cc(((j-1)*m1+1):+j*m1)); 
    end
   
    for k=1:m
